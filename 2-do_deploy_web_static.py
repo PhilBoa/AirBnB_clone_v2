@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 """
-A Fabric script that deploys an archive to web servers.
+This Fabric script that deploys an archive to web servers.
 """
 
 from fabric.api import *
