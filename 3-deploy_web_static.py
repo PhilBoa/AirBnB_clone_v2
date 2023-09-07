@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 """
-This Fabric script creates and distributes an archive to web servers.
+Fabric script that creates and distributes an archive to web servers.
 """
 
 from fabric.api import *
