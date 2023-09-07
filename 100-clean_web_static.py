@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 """
-This Fabric script deletes out-of-date archives.
+Fabric script that deletes out-of-date archives.
 """
 
 from fabric.api import *
