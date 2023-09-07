@@ -1,4 +1,4 @@
-# Puppet Manifest for Setting up a Web Server and Deploying web_static
+# A Puppet Manifest for Setting up a Web Server and Deploying web_static
 
 exec { 'update':
   command => '/usr/bin/apt-get update',
