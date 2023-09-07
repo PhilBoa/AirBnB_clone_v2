@@ -1,63 +1,70 @@
 # Puppet Manifest for Setting up a Web Server and Deploying web_static
 
-# Update package list
-exec { 'update_package_list':
-  command     =>  '/usr/bin/apt-get update',
-  refreshonly => true,
+exec { 'update':
+  command => '/usr/bin/apt-get update',
 }
 
-# Install Nginx if not already installed
-package { 'nginx':
-  ensure  =>  'installed',
-  require =>  Exec['update_package_list'],
+-> package { 'nginx':
+  ensure   => 'present',
+  provider => 'apt'
 }
 
-# Create necessary directories if they don't exist
-file { '/data/web_static':
-  ensure => 'directory',
+-> file { '/data/':
+    ensure => 'directory',
+    group  => 'ubuntu',
+    owner  => 'ubuntu',
 }
 
-file { '/data/web_static/releases':
-  ensure => 'directory',
+-> file { '/data/web_static/':
+    ensure => 'directory',
+    group  => 'ubuntu',
+    owner  => 'ubuntu',
 }
 
-file { '/data/web_static/shared':
-  ensure => 'directory',
+-> file { '/data/web_static/releases/':
+    ensure => 'directory',
+    group  => 'ubuntu',
+    owner  => 'ubuntu',
 }
 
-file { '/data/web_static/releases/test':
-  ensure => 'directory',
+-> file { '/data/web_static/shared/':
+    ensure => 'directory',
+    group  => 'ubuntu',
+    owner  => 'ubuntu',
 }
 
-# Create a fake HTML file for testing
-file { '/data/web_static/releases/test/index.html':
-  ensure  => 'file',
-  content => '<html><head></head><body>Holberton School</body></html>',
+-> file { '/data/web_static/releases/test/':
+    ensure => 'directory',
+    group  => 'ubuntu',
+    owner  => 'ubuntu',
 }
 
-# Create or update the symbolic link
-file { '/data/web_static/current':
-  ensure => 'link',
-  target => '/data/web_static/releases/test',
-  force  => true,
-}
-
-# Give ownership to the ubuntu user and group
-file { '/data':
+-> file { '/data/web_static/releases/test/index.html':
+  ensure  => 'present',
+  path    => '/data/web_static/releases/test/index.html',
   owner   => 'ubuntu',
   group   => 'ubuntu',
-  recurse => true,
+  content => "Holberton School Puppet\n",
 }
 
-# Update Nginx configuration
-file_line { 'web_static_alias':
-  path => '/etc/nginx/sites-available/default',
-  line => 'location /hbnb_static/ { alias /data/web_static/current/; }',
+-> file { '/data/web_static/current':
+  ensure  => 'link',
+  replace => 'yes',
+  owner   => 'ubuntu',
+  group   => 'ubuntu',
+  target  => '/data/web_static/releases/test',
 }
 
-# Restart Nginx
-service { 'nginx':
-  ensure  => 'running',
-  enable  => true,
-  require => File_line['web_static_alias'],
+-> exec { 'chown -R ubuntu:ubuntu /data/':
+  path => '/usr/bin/:/usr/local/bin/:/bin/'
+}
+
+-> exec { 'sed':
+  command => "sed -i \
+  '/^\tlisten 80 default_server;$/i location /hbnb_static/ { alias /data/web_static/current/; }' /etc/nginx/sites-available/default",
+  path    => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin',
+}
+
+-> exec { 'nginx restart':
+  path => '/etc/init.d/'
 }
