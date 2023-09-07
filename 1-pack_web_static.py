@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 """
-This Fabric script defines a function to create a compressed .tgz archive
+Fabric script that defines a function to create a compressed .tgz archive
 of the web_static folder. It also follows specific naming conventions for the
 archive and stores it in the versions folder.
 
